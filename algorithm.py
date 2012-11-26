@@ -13,20 +13,24 @@
 # S is the source square
 # D is the destination square
 #
-grid = [['T','X','O','O','O'],['X','O','O','O','O'],['O','O','O','O','O'],['O','O','O','O','O'],['O','O','O','O','O']]
+grid = [['C','O','O','O','O'],['O','O','O','X','O'],['O','O','O','X','O'],['O','O','O','X','O'],['O','O','O','X','D']]
+LOWER_BOUND = 0
+UPPER_BOUND = 4
+MAX_COST = 2000
 
 #stub
 def findCheapestPath(source, openSquares, travelled, currentSquare, endSquare):
 	cheapest = None
-	cost = 20 # A magic number to initialize.
+	cheapestCost = MAX_COST
 	for square in openSquares:
-		if getCost(source, square) < cost:
-			cost = getF(travelled, currentSquare, endSquare)
+		totalCost = getF(travelled, square, endSquare)
+		if totalCost < cheapestCost:
 			cheapest = square
+			cheapestCost = totalCost
 	return cheapest # may return nil!
 
-def getF(travelled, currentSquare, endSquare):
-	return getG(travelled) + getH(currentSquare, endSquare)
+def getF(travelled, square, endSquare):
+	return getG(travelled) + getH(square, endSquare)
 
 def getG(travelled):
 	total = 0
@@ -51,6 +55,8 @@ def getCost(source, destination):
 	return cost
 
 def traverse(source, destination, travelled):
+	print destination
+	print source
 	cost = getCost(source, destination)
 	travelled.append((cost, source))
 	grid[source[0]][source[1]] = 'T'
@@ -59,12 +65,15 @@ def traverse(source, destination, travelled):
 
 def isOpen(square):
 	open = False
-	if square[0] >= 0 and square[0] <= 4 and square[1] >= 0 and square[1] <= 4: # This is to prevent wrapping
-		if grid[square[0]][square[1]] == 'O':
+	# This is to prevent wrapping
+	if square[0] >= LOWER_BOUND and square[0] <= UPPER_BOUND and square[1] >= LOWER_BOUND and square[1] <= UPPER_BOUND: 
+		if grid[square[0]][square[1]] == 'O' or grid[square[0]][square[1]] == 'D' :
 			open = True
 	return open
 
-def getOpenAdjacentSquares(currentSquare):
+
+# If no new squares are found, return the path from which you came
+def getOpenAdjacentSquares(currentSquare, travelled):
 	openSquares = []
 	for i in [-1, 0, 1]:
 		for j in [-1, 0, 1]:
@@ -72,11 +81,15 @@ def getOpenAdjacentSquares(currentSquare):
 				square = (currentSquare[0] + i, currentSquare[1] + j)
 				if isOpen(square):
 					openSquares.append(square)
-
+	if travelled:
+		openSquares.append(travelled[-1][1])
 	return openSquares
 
-def thereIsAPath(currentSquare, endSquare, openSquares):
-	return currentSquare != endSquare and openSquares
+# This covers the two END conditions:
+# 1. You have reached the destination
+# 2. You have returned to the start and the only path is traversed.
+def thereIsAPath(currentSquare, endSquare, startSquare, openSquares, travelled):
+	return currentSquare != endSquare and (openSquares[0] != travelled[-1][1] and currentSquare != startSquare)
 
 def printGrid():
 	print grid[4]
@@ -113,12 +126,14 @@ def main():
 	endSquare = (4,4)
 	printGrid()
 
-	openSquares = getOpenAdjacentSquares(currentSquare)
-	currentSquare = traverse(currentSquare, (1,1), travelled)
+	openSquares = getOpenAdjacentSquares(currentSquare, travelled)
+	cheapest = findCheapestPath(currentSquare, openSquares, travelled, currentSquare, endSquare)
+	currentSquare = traverse(currentSquare, cheapest, travelled)
 	printGrid()
 
-	while (thereIsAPath(currentSquare, endSquare, openSquares)):
- 		cheapest = findCheapestPath(currentSquare, getOpenAdjacentSquares(currentSquare), travelled, currentSquare, endSquare)
+	while (thereIsAPath(currentSquare, endSquare, startSquare, openSquares, travelled)):	
+		openSquares = getOpenAdjacentSquares(currentSquare, travelled)
+ 		cheapest = findCheapestPath(currentSquare, openSquares, travelled, currentSquare, endSquare)
  		currentSquare = traverse(currentSquare, cheapest, travelled)
  		printGrid()
 
