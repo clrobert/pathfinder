@@ -3,7 +3,10 @@ pp = pprint.PrettyPrinter(indent=4)
 
 
 def get_square(grid, x, y):
-    return next((s for s in grid if s['x'] == x and s['y'] == y), None)
+    return next(
+        (s for s in grid if s['x'] == x and s['y'] == y),
+        None
+    )
 
 
 def step(square):
@@ -13,8 +16,10 @@ def step(square):
 def get_walkable(squares):
     return [x for x in squares if x["walkable"]]
 
+
 def compact(y):
     return [x for x in y if x is not None]
+
 
 def get_adjacent_walkable(grid, square):
     x = square['x']
@@ -61,7 +66,9 @@ def get_closest_fdist_square(square_list):
 
 
 def remove_square(square_list, square):
-    return [x for x in square_list if not (x["x"] == square["x"] and x["y"] == square["y"])]
+    return [x for x in square_list if not (
+        x["x"] == square["x"] and x["y"] == square["y"]
+    )]
 
 
 open_list = []
@@ -78,18 +85,21 @@ get_square(grid, 3, 2)["walkable"] = False
 get_square(grid, 3, 3)["walkable"] = False
 get_square(grid, 3, 4)["walkable"] = False
 
-# Insert the cat
-cat_square = get_square(grid, 1, 2)
-cat_square["cat"] = True
-
 # Insert the tuna
 tuna_square = get_square(grid, 5, 1)
 tuna_square["tuna"] = True
 
+# Insert the cat
+cat_square = get_square(grid, 1, 2)
+cat_square["cat"] = True
+cat_square["g"] = 0
+cat_square["h"] = get_distance(cat_square, tuna_square)
+cat_square["f"] = cat_square["g"] + cat_square["h"]
+
 iteration = 0
 current_square = cat_square
 
-while(current_square is not tuna_square):
+while current_square is not tuna_square:
     iteration = iteration + 1
     closed_list.append(current_square)
     adjacent_walkable = get_adjacent_walkable(grid, current_square)
@@ -106,15 +116,9 @@ while(current_square is not tuna_square):
         square["g"] = get_distance(cat_square, square)
         square["h"] = get_distance(square, tuna_square)
         square["f"] = square["g"] + square["h"]
-    """
-    pp.pprint("Step: %s" % iteration)
-    pp.pprint(adjacent_walkable)
-    pp.pprint(open_list)
-    pp.pprint(closed_list)
-    pp.pprint(current_square)
-    """
+
     current_square = get_closest_fdist_square(open_list)
 
 closed_list.append(tuna_square)
-print("Yay! Done!")
+print("Yay! The cat got the tuna! Path: ")
 pp.pprint(closed_list)
