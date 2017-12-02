@@ -6,27 +6,27 @@ pp = pprint.PrettyPrinter(indent=4)
 def build_graph():
     return [
         {
-            "label": "home",
+            "label": "cat",
             "edges": [("a", 3), ("b", 2), ("c", 5)],
             "distance": 0,
             "visited": True,
         },
         {
             "label": "a",
-            "edges": [("home", 3), ("d", 3)],
+            "edges": [("cat", 3), ("d", 3)],
             "distance": None,
             "visited": False,
 
         },
         {
             "label": "b",
-            "edges": [("d", 1), ("home", 2), ("e", 6)],
+            "edges": [("d", 1), ("cat", 2), ("e", 6)],
             "distance": None,
             "visited": False,
         },
         {
             "label": "c",
-            "edges": [("home", 5), ("e", 2)],
+            "edges": [("cat", 5), ("e", 2)],
             "distance": None,
             "visited": False,
         },
@@ -38,18 +38,18 @@ def build_graph():
         },
         {
             "label": "e",
-            "edges": [("b", 6), ("c", 2), ("f", 1), ("university", 4)],
+            "edges": [("b", 6), ("c", 2), ("f", 1), ("tuna", 4)],
             "distance": None,
             "visited": False,
         },
         {
             "label": "f",
-            "edges": [("d", 4), ("e", 1), ("university", 2)],
+            "edges": [("d", 4), ("e", 1), ("tuna", 2)],
             "distance": None,
             "visited": False,
         },
         {
-            "label": "university",
+            "label": "tuna",
             "edges": [("f", 2), ("e", 4)],
             "distance": None,
             "visited": False,
@@ -84,7 +84,7 @@ def traverse(unvisited_set, current_node):
 
     current_node["visited"] = True
 
-    if current_node["label"] == "university":
+    if current_node["label"] == "tuna":
         return
     else:
         unvisited_set = get_unvisited(unvisited_set)
@@ -93,7 +93,7 @@ def traverse(unvisited_set, current_node):
 
 # Initial setup.
 graph = build_graph()
-root_node = next(x for x in graph if x["label"] == "home")
+root_node = next(x for x in graph if x["label"] == "cat")
 
 # Go!
 graph = traverse(get_unvisited(graph), root_node)
