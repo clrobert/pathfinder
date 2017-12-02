@@ -1,1 +1,1 @@
-A simple example of A*. The cat finds the tuna.
+The cat finds the tuna.

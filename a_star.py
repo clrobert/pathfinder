@@ -9,10 +9,6 @@ def get_square(grid, x, y):
     )
 
 
-def step(square):
-    print("The cat is checking %s!" % square)
-
-
 def get_walkable(squares):
     return [x for x in squares if x["walkable"]]
 
@@ -43,7 +39,7 @@ def build_empty_grid(n):
                     "walkable": True,
                     "x": x,
                     "y": y,
-                    "tuna": False
+                    "tuna": False,
                 }
             )
     return grid
